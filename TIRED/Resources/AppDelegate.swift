@@ -11,13 +11,27 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        
+        let window =  UIWindow(frame: UIScreen.main.bounds)
+        if AuthManager.shared.isSignedIn {
+            AuthManager.shared.refreshIfNeeded(completion: nil)
+            window.rootViewController = TabbarController()
+        }else {
+            let navC = UINavigationController(rootViewController: WelcomeViewController())
+            navC.navigationBar.prefersLargeTitles = true
+            navC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
+            window.rootViewController =  navC
+        }
+        window.makeKeyAndVisible()
+        self.window = window
+      //  print(AuthManager.shared.signedURL?.absoluteString)
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
