@@ -12,7 +12,7 @@ class SerachViewController: UIViewController,UISearchResultsUpdating,UISearchBar
     
     func didTapResult(_result: SearchResult) {
         switch _result {
-                
+        
             case .artist(model: let model):
             guard let model = URL(string: model.external_urls["spotify"] ?? "") else {return}
             let vc  = SFSafariViewController(url: model)
@@ -143,6 +143,7 @@ extension  SerachViewController:UICollectionViewDelegate,UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        HapticManager.shared.vibrateForSelection()
         collectionView.deselectItem(at: indexPath, animated: true)
         let category = categories[indexPath.row]
         let vc = CategogryViewController(category: category)

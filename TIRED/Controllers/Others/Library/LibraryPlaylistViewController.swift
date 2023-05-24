@@ -8,7 +8,7 @@
 import UIKit
 
 class LibraryPlaylistViewController: UIViewController {
-
+    public var selectionHandler:((Playlist) -> Void)?
     private let tableView:UITableView =  {
         let tableView = UITableView(frame: .zero, style: .grouped)
        
@@ -33,9 +33,16 @@ class LibraryPlaylistViewController: UIViewController {
         noPlaylist.configure(with: ActionaLabelViewModel(text: "You dont have any playlists yet", actionTitle: "Create"))
         noPlaylist.delegate = self
         fetchData()
+        if selectionHandler != nil {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close,target:self,action:#selector( didTapClose))
+        }
+        
         }
     
-    
+    @objc func didTapClose() {
+        dismiss(animated: true,completion: nil)
+    }
+   
     
     private func fetchData() {
         APICaller.shared.getCurrentUserPlaylist {[weak self] result in
@@ -64,8 +71,9 @@ class LibraryPlaylistViewController: UIViewController {
                 
             }
         }else {
-            tableView.reloadData()
             tableView.isHidden = false
+            tableView.reloadData()
+           
         }
     }
 }
@@ -92,13 +100,15 @@ extension LibraryPlaylistViewController:ActionLabelViewDelegate {
                 return
             }
             APICaller.shared.createPlaylist(with: text) {[weak self ] sucess in
-           
+                DispatchQueue.main.async {
                     if sucess {
                         self?.fetchData()
+                        
                     }else {
                         print("failed to create playlist")
                     }
-                
+                    
+                }
             }
         }))
         
@@ -124,6 +134,13 @@ extension LibraryPlaylistViewController:UITableViewDelegate,UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let playslist = playlists[indexPath.row]
+        guard selectionHandler == nil else {
+            
+            selectionHandler?(playslist)
+            dismiss(animated: true)
+            return
+        }
+        
         let vc = PlaylistViewController(playlist: playslist)
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)

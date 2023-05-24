@@ -54,10 +54,52 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         UIBarButtonItem(image: UIImage(systemName: "gear"),
                         style: .done, target: self,
                         action: #selector(didTapSettings))
-        fecthData()
+      
         configureCollection()
         view.addSubview(spinner)
+        fecthData()
+        addlongTapGesture()
         
+    }
+    
+    
+    private func addlongTapGesture() {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress))
+        scollectionView.isUserInteractionEnabled = true
+        scollectionView.addGestureRecognizer(gesture)
+      
+        
+    }
+    
+    @objc func didLongPress(_ gesture:UITapGestureRecognizer) {
+        guard gesture.state == .began else {
+            return
+        }
+        let touchPoint = gesture.location(in:scollectionView)
+        guard let indexPath = scollectionView.indexPathForItem(at: touchPoint),indexPath.section == 2  else {
+            return
+        }
+        let model = track[indexPath.row]
+        let actionSheet = UIAlertController(title: model.name, message: "woul you like to add this to a playlist", preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "cancel", style: .cancel,handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Add to Playlist", style: .default,handler: {[weak self] _ in
+            DispatchQueue.main.async {
+                let vc = LibraryPlaylistViewController()
+                vc.selectionHandler = { playlist in
+                    APICaller.shared.addTrackToPlaylist(track: model, playlist: playlist) { done in
+                        if done {
+                            print("done")
+                        }
+                    }
+                    
+                }
+                vc.title = "Select Playlist"
+                self?.present(vc, animated: true)
+                
+            }
+        }))
+        
+        present(actionSheet, animated: true)
     }
     
     private  func configureCollection() {

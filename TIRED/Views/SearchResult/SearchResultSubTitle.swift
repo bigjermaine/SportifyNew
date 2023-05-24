@@ -54,7 +54,7 @@ class SearchResultTitlesSubtitleTableViewCell: UITableViewCell {
         }
         func configure(with viewModel: SearchResultTitlesSubtitleViewModel) {
             label.text = viewModel.title
-            SearchResultImageView.sd_setImage(with:viewModel.image)
+            SearchResultImageView.sd_setImage(with:viewModel.image,placeholderImage: UIImage(systemName: "person.fill"))
             subLabel.text = viewModel.subTitle
         }
     override func prepareForReuse() {

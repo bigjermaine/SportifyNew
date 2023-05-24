@@ -12,7 +12,8 @@ class LibaryViewController: UIViewController {
     private let playListVC =  LibraryPlaylistViewController()
     private let albumsVc =   LibraryAlbumViewController()
     private let toggleView = LibraryToggleView()
-    
+    var playlists = [Playlist]()
+  
     private let scrollView: UIScrollView  = {
        let scrollView = UIScrollView()
         scrollView.isPagingEnabled = true
@@ -29,6 +30,29 @@ class LibaryViewController: UIViewController {
         addChildren()
     }
     
+    func configure() {
+        APICaller.shared.getCurrentUserPlaylist {[weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                    
+                case .success( let playlists):
+                    self?.playlists = playlists
+                    self?.update()
+                case .failure( let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    private func update() {
+        if playlists.isEmpty {
+            
+        }else {
+            
+        }
+        
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.frame = CGRect(x: 0, y: view.safeAreaInsets.top + 55, width: view.width, height: view.height - view.safeAreaInsets.top  - 55 - view.safeAreaInsets.bottom)
