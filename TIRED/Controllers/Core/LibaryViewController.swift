@@ -30,30 +30,8 @@ class LibaryViewController: UIViewController {
         addChildren()
     }
     
-    func configure() {
-        APICaller.shared.getCurrentUserPlaylist {[weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    
-                case .success( let playlists):
-                    self?.playlists = playlists
-                    self?.update()
-                case .failure( let error):
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    private func update() {
-        if playlists.isEmpty {
-            
-        }else {
-            
-        }
-        
-    }
-    override func viewDidLayoutSubviews() {
+     
+      override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.frame = CGRect(x: 0, y: view.safeAreaInsets.top + 55, width: view.width, height: view.height - view.safeAreaInsets.top  - 55 - view.safeAreaInsets.bottom)
         toggleView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: 200, height: 55)
@@ -91,7 +69,7 @@ extension LibaryViewController:  UIScrollViewDelegate,LibraryToggleViewDelegate 
     }
     
     func libraryToggleViewDidTapAlbum(_ toggleView: LibraryToggleView) {
-        scrollView.setContentOffset(CGPoint(x: view.width, y: 0), animated:false)
+        scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         updateBarButtons() 
     }
     

@@ -8,12 +8,13 @@
 import Foundation
 import UIKit
 import AVFoundation
+
 protocol PlayerDataSource: AnyObject {
     var songName:String? {get}
     var sutitle:String?  {get}
     var imageUrl:URL? {get}
-    
-    
+    var playerDuration:String {get}
+    var playerCurrent:String {get}
 }
 final class PlaybackPresenter: PlayerViewControllerDelegate {
   
@@ -59,9 +60,7 @@ final class PlaybackPresenter: PlayerViewControllerDelegate {
        self.track = nil
 
     
-       
-       
-       
+    
        self.playerQueue = AVQueuePlayer(items:tracks.compactMap ({
            guard let url = URL(string: $0.preview_url ?? ""  ) else {
                return nil
@@ -73,12 +72,13 @@ final class PlaybackPresenter: PlayerViewControllerDelegate {
        
        
         let vc =  PlayerViewController()
-       vc.dataSource = self
-       vc.title = track.first?.album?.name
+        vc.dataSource = self
+        vc.title = track.first?.album?.name
         viewcontrolller.present(UINavigationController(rootViewController: vc),animated: true,completion: nil)
        
-       self.playervc = vc
+        self.playervc = vc
     }
+    
     func didTapPlayPause() {
         if let player = player {
             if player.timeControlStatus == .playing {
@@ -134,6 +134,39 @@ extension PlaybackPresenter:PlayerDataSource {
     }
     
     
+    var playerDuration: String
+    {
+        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+        player = AVPlayer(playerItem: playerItem)
+        let duration : CMTime = playerItem.asset.duration
+        let seconds : Float64 = CMTimeGetSeconds(duration)
+       return stringFromTimeInterval(interval: seconds)
+    }
     
+    var  playerCurrent:String {
+        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+        player = AVPlayer(playerItem: playerItem)
+        let duration1 : CMTime = playerItem.currentTime()
+        let seconds1 : Float64 = CMTimeGetSeconds(duration1)
+        return    stringFromTimeInterval(interval: seconds1)
+        
+        
+    }
     
+    func getDurationInSeconds() -> Double {
+            let playerItem: AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+            let duration: CMTime = playerItem.asset.duration
+            let seconds: Double = CMTimeGetSeconds(duration)
+            return seconds
+        }
+    
+}
+
+func stringFromTimeInterval(interval: TimeInterval) -> String {
+    
+    let interval = Int(interval)
+    let seconds = interval % 60
+    let minutes = (interval / 60) % 60
+    let hours = (interval / 3600)
+    return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 }

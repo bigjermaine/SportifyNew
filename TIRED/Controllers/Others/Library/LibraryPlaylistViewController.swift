@@ -143,6 +143,7 @@ extension LibraryPlaylistViewController:UITableViewDelegate,UITableViewDataSourc
         
         let vc = PlaylistViewController(playlist: playslist)
         vc.navigationItem.largeTitleDisplayMode = .never
+        vc.isOwner = true
         navigationController?.pushViewController(vc, animated: true)
     }
     

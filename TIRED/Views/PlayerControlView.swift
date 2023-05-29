@@ -20,9 +20,9 @@ final class PlayerControlsView:UIView {
     private var isplaying = true
     
     weak var delegate:PlayerControlsViewDelegate?
-    private let volumeSliders: UISlider = {
+     let volumeSliders: UISlider = {
         let slider  = UISlider()
-        slider.value = 0.5
+       
         
      return slider
     }()

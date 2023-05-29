@@ -10,7 +10,7 @@ import UIKit
 class PlaylistViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, PlaylistHeaderCollectionViewDelegate {
     
     
-    
+     public  var isOwner = false 
     private let playlist:Playlist
     private var tracks = [AudioTrack]()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _,_ ->
@@ -71,11 +71,34 @@ class PlaylistViewController: UIViewController, UICollectionViewDelegate, UIColl
             }
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
+        
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didlongpress))
+        collectionView.addGestureRecognizer(gesture)
+        
+    }
+    @objc func didlongpress(_ gesture:UITapGestureRecognizer) {
+        guard gesture.state == .began else {return}
+        let touchpoint  = gesture.location(in: collectionView)
+        guard let indexpath = collectionView.indexPathForItem(at: touchpoint) else {return}
+        let trackToDelete = tracks[indexpath.row]
+        let actionsheet = UIAlertController(title: "Remove\(trackToDelete.name)", message: "would like to remove this from playlist", preferredStyle: .actionSheet)
+        actionsheet.addAction(UIAlertAction(title: "cancel", style: .cancel))
+        actionsheet.addAction(UIAlertAction(title: "Rekove", style: .destructive,handler: {[weak self] _ in
+            guard let strongSelf = self else {return}
+            APICaller.shared.removeTrack(track: trackToDelete, playlist: strongSelf.playlist  ) { [weak self ]done in
+                if done {
+                    self?.tracks.remove(at: indexpath.row)
+                    self?.viewModel.remove(at: indexpath.row)
+                    self?.collectionView.reloadData()
+                }
+            }
+        }))
+        present(actionsheet, animated: true)
     }
     
     @objc func didTapShare() {
         print(playlist.external_urls)
-        guard let url = URL(string: playlist.external_urls["spotify"] as? String ?? "") else {return}
+        guard let url = URL(string: playlist.external_urls["spotify"] ?? "") else {return}
         let vc = UIActivityViewController(activityItems: [url], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc,animated: true)
