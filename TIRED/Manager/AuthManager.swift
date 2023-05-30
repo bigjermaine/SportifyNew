@@ -132,6 +132,7 @@ final class AuthManager {
         }
     }
     
+    
    func refreshIfNeeded(completion:((Bool)->Void)?){
         guard !refreshingToken else {return}
         guard shouldRefreshToken else {

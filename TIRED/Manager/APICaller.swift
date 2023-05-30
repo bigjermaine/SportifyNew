@@ -311,7 +311,7 @@ class APICaller {
                     
                       let result = try JSONDecoder().decode(NewReleasesResponse.self, from: data)
                        completion(.success(result))
-//                    let json = try JSONSerialization.jsonObject(with: data,options: .allowFragments)
+//                    l3et json = try JSONSerialization.jsonObject(with: data,options: .allowFragments)
 //                    print(json)
                 }catch {
                     completion(.failure(APIError.failedToGetData))

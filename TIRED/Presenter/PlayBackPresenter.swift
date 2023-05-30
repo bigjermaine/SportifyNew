@@ -18,7 +18,7 @@ protocol PlayerDataSource: AnyObject {
 }
 final class PlaybackPresenter: PlayerViewControllerDelegate {
   
-    var index:Int = 0
+    var index  = 0
     var playervc:PlayerViewController?
     static let shared = PlaybackPresenter()
     private var track:AudioTrack?
@@ -29,7 +29,11 @@ final class PlaybackPresenter: PlayerViewControllerDelegate {
         if let track = track, tracks.isEmpty {
             return track
         }else if let player = self.playerQueue, !tracks.isEmpty {
-               return tracks[index]
+            let item = player.currentItem
+            let items = player.items()
+            guard let index = items.firstIndex(where: {$0 == item}) else { return nil}
+            
+            return tracks[index]
         }
       
       return nil
@@ -98,24 +102,26 @@ final class PlaybackPresenter: PlayerViewControllerDelegate {
     func didTapForward() {
         if tracks.isEmpty {
             player?.pause()
-        }else if let player = playerQueue?.items().first {
+        }else if let player = playerQueue {
+            player.advanceToNextItem()
             index += 1
-            playerQueue?.pause()
-            playerQueue?.removeAllItems()
-            playerQueue = AVQueuePlayer(items: [player])
             playervc?.update()
-            playerQueue?.play()
         }
+        
+        
     }
     
     func didTapBackward() {
         if tracks.isEmpty {
             player?.pause()
             player?.play()
-        }else if let player = playerQueue {
-            playerQueue?.advanceToNextItem()
-            index += 1
+        }
+        else if let player = playerQueue?.items().first {
+            playerQueue?.pause()
+            playerQueue?.removeAllItems()
+            playerQueue = AVQueuePlayer(items: [player])
             playervc?.update()
+            playerQueue?.play()
         }
     }
 }
@@ -136,7 +142,7 @@ extension PlaybackPresenter:PlayerDataSource {
     
     var playerDuration: String
     {
-        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string:currentTracks?.preview_url ?? "")!)
         player = AVPlayer(playerItem: playerItem)
         let duration : CMTime = playerItem.asset.duration
         let seconds : Float64 = CMTimeGetSeconds(duration)
@@ -144,7 +150,7 @@ extension PlaybackPresenter:PlayerDataSource {
     }
     
     var  playerCurrent:String {
-        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+        let playerItem:AVPlayerItem = AVPlayerItem(url: URL(string:currentTracks?.preview_url ?? "")!)
         player = AVPlayer(playerItem: playerItem)
         let duration1 : CMTime = playerItem.currentTime()
         let seconds1 : Float64 = CMTimeGetSeconds(duration1)
@@ -154,7 +160,7 @@ extension PlaybackPresenter:PlayerDataSource {
     }
     
     func getDurationInSeconds() -> Double {
-            let playerItem: AVPlayerItem = AVPlayerItem(url: URL(string: track?.preview_url ?? "")!)
+            let playerItem: AVPlayerItem = AVPlayerItem(url: URL(string:currentTracks?.preview_url ?? "")!)
             let duration: CMTime = playerItem.asset.duration
             let seconds: Double = CMTimeGetSeconds(duration)
             return seconds

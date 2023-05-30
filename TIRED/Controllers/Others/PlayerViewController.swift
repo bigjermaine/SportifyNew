@@ -31,13 +31,13 @@ class PlayerViewController: UIViewController, PlayerControlsViewDelegate {
     }()
     private var songTotalLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 10,weight: .semibold)
+        label.font = .systemFont(ofSize: 20,weight: .bold)
         label.numberOfLines = 0
         return label
     }()
     private var SongCurrentLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 10,weight: .semibold)
+        label.font = .systemFont(ofSize: 20,weight: .bold)
         label.numberOfLines = 0
         return label
     }()
@@ -102,10 +102,10 @@ class PlayerViewController: UIViewController, PlayerControlsViewDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        PlayerViewImageView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height:  view.width)
-        controlView.frame = CGRect(x: 10, y:  PlayerViewImageView.bottom+10, width: view.width-20, height:400)
-        songTotalLabel.frame  = CGRect(x: view.width - 120, y:  controlView.top, width: 100, height:100)
-        SongCurrentLabel.frame  = CGRect(x: 20, y:  controlView.top, width: 100, height:100)
+        PlayerViewImageView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.width, height:  view.width - 100)
+        controlView.frame = CGRect(x: 10, y:  PlayerViewImageView.bottom+60, width: view.width-20, height:400)
+        songTotalLabel.frame  = CGRect(x: view.width - 100, y:  PlayerViewImageView.bottom+10, width: 100, height:20)
+        SongCurrentLabel.frame  = CGRect(x: 10, y:  PlayerViewImageView.bottom+10, width: 100, height:20)
     }
     
     private func configureBarButton() {
